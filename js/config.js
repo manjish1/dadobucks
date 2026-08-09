@@ -19,10 +19,3 @@ const firebaseConfig = {
   messagingSenderId: "862382999377",
   appId: "1:862382999377:web:dc5a3fee20a9d90024b570"
 };
-
-// The admin passcode required to add/subtract Dado Bucks, stored as a
-// SHA-256 hash so it isn't sitting in plain text in the page source.
-// To change it, run this in your browser's console with your new code:
-//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('NEWCODE')).then(h => console.log([...new Uint8Array(h)].map(b => b.toString(16).padStart(2, '0')).join('')))
-// then paste the printed hash below.
-const ADMIN_PASSCODE_HASH = "6033790b521dfe27633535481153d6bb909de630ab821568ada45e71ad3b438e";

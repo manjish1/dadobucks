@@ -35,9 +35,18 @@ function showContent() {
   lockView.style.display = "none";
   contentView.style.display = "block";
 
-  Backend.subscribeTransactions(profileId, (txns) => {
-    renderTxnList(document.getElementById("all-list"), txns);
+  const modeHolder = document.getElementById("mode-banner-holder");
+  if (Backend.mode === "local") {
+    modeHolder.innerHTML = '<div class="center-wrap"><span class="mode-banner">🧪 Demo mode: saved on this device only. Add your Firebase config to sync everywhere.</span></div>';
+  }
+
+  Backend.subscribeBalance(profileId, (balance) => {
+    document.getElementById("balance").textContent = balance;
   });
+
+  Backend.subscribeTransactions(profileId, (txns) => {
+    renderTxnList(document.getElementById("recent-list"), txns);
+  }, 5);
 }
 
 async function unlock() {
@@ -61,7 +70,7 @@ async function init() {
     return;
   }
 
-  buildNav("history");
+  buildNav("account");
 
   const name = await Backend.getProfileName(profileId);
   if (!name) {

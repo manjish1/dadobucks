@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>History - Dado Bucks Bank</title>
+<title>My Account - Dado Bucks Bank</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧑🏽‍💼</text></svg>">
 </head>
@@ -11,7 +11,7 @@
 <div class="wrap">
   <header class="top">
     <h1>🧑🏽‍💼 Dado Bucks Bank</h1>
-    <div class="sub" id="profile-sub">Every coin tells a story!</div>
+    <div class="sub" id="profile-sub">Your very own money adventure!</div>
   </header>
 
   <nav class="tabs" id="nav-tabs"></nav>
@@ -30,15 +30,24 @@
   </div>
 
   <div id="content-view" style="display:none;">
-    <h2 class="section-title">📜 All Transactions</h2>
+    <div id="mode-banner-holder"></div>
+
+    <div class="card balance-card">
+      <div class="coin">💰</div>
+      <div class="label">Your Balance</div>
+      <div class="amount"><span id="balance">0</span> <span class="unit">DB</span></div>
+      <div style="color:#92660a; font-weight:600;">Dado Bucks</div>
+    </div>
+
+    <h2 class="section-title">✨ Recent Activity</h2>
     <div class="card">
-      <ul class="txn-list" id="all-list">
+      <ul class="txn-list" id="recent-list">
         <li class="empty-state">Loading...</li>
       </ul>
     </div>
   </div>
 
-  <footer class="foot">Every chore counts! 🧹</footer>
+  <footer class="foot">Keep earning, keep saving! 🌟</footer>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -46,6 +55,6 @@
 <script src="js/config.js"></script>
 <script src="js/backend.js"></script>
 <script src="js/ui-helpers.js"></script>
-<script src="js/transactions.js"></script>
+<script src="js/account.js"></script>
 </body>
 </html>

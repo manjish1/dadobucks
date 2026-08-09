@@ -1,4 +1,11 @@
+const params = new URLSearchParams(window.location.search);
+const profileId = params.get("profile");
+
+const navTabs = document.getElementById("nav-tabs");
+const profileSub = document.getElementById("profile-sub");
 const lockView = document.getElementById("lock-view");
+const lockNameEl = document.getElementById("lock-name");
+const notFoundView = document.getElementById("not-found-view");
 const adminView = document.getElementById("admin-view");
 const passcodeInput = document.getElementById("passcode-input");
 const passcodeError = document.getElementById("passcode-error");
@@ -11,12 +18,19 @@ const subtractBtn = document.getElementById("subtract-btn");
 const adminError = document.getElementById("admin-error");
 const successBanner = document.getElementById("success-banner");
 
-async function hash(text) {
-  const bytes = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+function buildNav(active) {
+  const tabs = [
+    { key: "account", href: `account.html?profile=${encodeURIComponent(profileId)}`, label: "🏠 My Account" },
+    { key: "history", href: `transactions.html?profile=${encodeURIComponent(profileId)}`, label: "📜 History" },
+    { key: "admin", href: `admin.html?profile=${encodeURIComponent(profileId)}`, label: "🔐 Admin" },
+    { key: "switch", href: "index.html", label: "👥 Switch Kid" }
+  ];
+  navTabs.innerHTML = tabs.map((t) => `<a href="${t.href}" class="${t.key === active ? "active" : ""}">${t.label}</a>`).join("");
 }
 
+// The admin page never trusts saved "unlocked" state — a fresh passcode
+// is required on every visit so a kid can't credit himself just because
+// he already unlocked the account/history pages this session.
 function lockAdmin() {
   lockView.style.display = "block";
   adminView.style.display = "none";
@@ -25,8 +39,8 @@ function lockAdmin() {
 }
 
 async function unlock() {
-  const enteredHash = await hash(passcodeInput.value);
-  if (enteredHash === ADMIN_PASSCODE_HASH) {
+  const ok = await Backend.verifyPasscode(profileId, passcodeInput.value);
+  if (ok) {
     lockView.style.display = "none";
     adminView.style.display = "block";
     passcodeError.textContent = "";
@@ -38,15 +52,7 @@ async function unlock() {
 
 unlockBtn.addEventListener("click", unlock);
 passcodeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlock(); });
-
-// Always start locked — including when the page is restored from the
-// back/forward cache — so a passcode is required on every visit.
-lockAdmin();
 window.addEventListener("pageshow", (e) => { if (e.persisted) lockAdmin(); });
-
-Backend.subscribeBalance((balance) => {
-  adminBalanceEl.textContent = balance;
-});
 
 async function submit(type) {
   adminError.textContent = "";
@@ -65,7 +71,7 @@ async function submit(type) {
   }
 
   try {
-    await Backend.addTransaction({ title, amount, type });
+    await Backend.addTransaction(profileId, { title, amount, type });
     successBanner.textContent = type === "credit"
       ? `🎉 Added ${amount} Dado Bucks for "${title}"!`
       : `✅ Subtracted ${amount} Dado Bucks for "${title}".`;
@@ -84,3 +90,28 @@ async function submit(type) {
 
 addBtn.addEventListener("click", () => submit("credit"));
 subtractBtn.addEventListener("click", () => submit("debit"));
+
+async function init() {
+  if (!profileId) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  buildNav("admin");
+
+  const name = await Backend.getProfileName(profileId);
+  if (!name) {
+    notFoundView.style.display = "block";
+    return;
+  }
+
+  profileSub.textContent = `${name}'s Admin Zone`;
+  lockNameEl.textContent = name;
+  lockAdmin();
+
+  Backend.subscribeBalance(profileId, (balance) => {
+    adminBalanceEl.textContent = balance;
+  });
+}
+
+init();

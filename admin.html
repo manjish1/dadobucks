@@ -11,21 +11,22 @@
 <div class="wrap">
   <header class="top">
     <h1>🧑🏽‍💼 Dado Bucks Bank</h1>
-    <div class="sub">Parent Admin Zone</div>
+    <div class="sub" id="profile-sub">Parent Admin Zone</div>
   </header>
 
-  <nav class="tabs">
-    <a href="index.html">🏠 My Account</a>
-    <a href="transactions.html">📜 History</a>
-    <a href="admin.html" class="active">🔐 Admin</a>
-  </nav>
+  <nav class="tabs" id="nav-tabs"></nav>
 
-  <div id="lock-view" class="card lock-screen">
+  <div id="lock-view" class="card lock-screen" style="display:none;">
     <div class="lock-emoji">🔒</div>
-    <h2 style="font-family:'Baloo 2',sans-serif;">Enter Passcode</h2>
+    <h2 style="font-family:'Baloo 2',sans-serif;">Enter <span id="lock-name">Kid</span>'s Passcode</h2>
     <input type="password" id="passcode-input" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
     <div class="error-msg" id="passcode-error"></div>
     <button class="btn btn-blue" id="unlock-btn">Unlock</button>
+  </div>
+
+  <div id="not-found-view" class="card" style="display:none; text-align:center;">
+    <p>We couldn't find that kid's profile.</p>
+    <a href="index.html" class="btn btn-blue" style="display:inline-block; text-decoration:none;">⬅ Back to Profiles</a>
   </div>
 
   <div id="admin-view" class="card" style="display:none;">

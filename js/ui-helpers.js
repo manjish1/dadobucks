@@ -1,6 +1,12 @@
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function timeAgo(date) {
   const d = new Date(date);
-  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) +
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) +
     " " + d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 }
 
@@ -20,22 +26,3 @@ function renderTxnList(el, txns) {
     </li>
   `).join("");
 }
-
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-const modeHolder = document.getElementById("mode-banner-holder");
-if (modeHolder && Backend.mode === "local") {
-  modeHolder.innerHTML = '<div class="center-wrap"><span class="mode-banner">🧪 Demo mode: saved on this device only. Add your Firebase config to sync everywhere.</span></div>';
-}
-
-Backend.subscribeBalance((balance) => {
-  document.getElementById("balance").textContent = balance;
-});
-
-Backend.subscribeTransactions((txns) => {
-  renderTxnList(document.getElementById("recent-list"), txns);
-}, 5);
