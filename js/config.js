@@ -12,12 +12,12 @@
 // ============================================================
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD60U89ohY8xEO1oScFQ_STZ94Dgrov4S0",
+  authDomain: "dado-bucks-bank.firebaseapp.com",
+  projectId: "dado-bucks-bank",
+  storageBucket: "dado-bucks-bank.firebasestorage.app",
+  messagingSenderId: "862382999377",
+  appId: "1:862382999377:web:dc5a3fee20a9d90024b570"
 };
 
 // The admin passcode required to add/subtract Dado Bucks.
