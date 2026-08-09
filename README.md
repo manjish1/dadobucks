@@ -1,4 +1,4 @@
-# 🐷 Dado Bucks Bank
+# 👨🏽‍💼 Dado Bucks Bank
 
 A fun "bank account" website for teaching kids about earning and spending money, using a play currency called **Dado Bucks**.
 

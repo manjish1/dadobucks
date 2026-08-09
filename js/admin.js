@@ -11,12 +11,25 @@ const subtractBtn = document.getElementById("subtract-btn");
 const adminError = document.getElementById("admin-error");
 const successBanner = document.getElementById("success-banner");
 
-function unlock() {
-  if (passcodeInput.value === ADMIN_PASSCODE) {
+async function hash(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function lockAdmin() {
+  lockView.style.display = "block";
+  adminView.style.display = "none";
+  passcodeInput.value = "";
+  passcodeError.textContent = "";
+}
+
+async function unlock() {
+  const enteredHash = await hash(passcodeInput.value);
+  if (enteredHash === ADMIN_PASSCODE_HASH) {
     lockView.style.display = "none";
     adminView.style.display = "block";
     passcodeError.textContent = "";
-    sessionStorage.setItem("dadoAdminUnlocked", "1");
   } else {
     passcodeError.textContent = "Nope, try again!";
     passcodeInput.value = "";
@@ -26,10 +39,10 @@ function unlock() {
 unlockBtn.addEventListener("click", unlock);
 passcodeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlock(); });
 
-if (sessionStorage.getItem("dadoAdminUnlocked") === "1") {
-  lockView.style.display = "none";
-  adminView.style.display = "block";
-}
+// Always start locked — including when the page is restored from the
+// back/forward cache — so a passcode is required on every visit.
+lockAdmin();
+window.addEventListener("pageshow", (e) => { if (e.persisted) lockAdmin(); });
 
 Backend.subscribeBalance((balance) => {
   adminBalanceEl.textContent = balance;
