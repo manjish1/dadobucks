@@ -290,6 +290,35 @@ input:focus { outline: none; border-color: var(--blue); }
   display: block;
 }
 
+.quick-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.quick-pick-btn {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  background: #f0f7ff;
+  color: var(--dark);
+  transition: transform 0.1s ease;
+}
+
+.quick-pick-btn:active { transform: translateY(1px); }
+.quick-pick-btn.credit { border-color: var(--green); }
+.quick-pick-btn.debit { border-color: var(--red); }
+.quick-pick-btn.custom { border-color: var(--blue); }
+
+.quick-pick-btn.selected.credit { background: var(--green); color: #fff; }
+.quick-pick-btn.selected.debit { background: var(--red); color: #fff; }
+.quick-pick-btn.selected.custom { background: var(--blue); color: #fff; }
+
 .mode-banner {
   text-align: center;
   font-size: 0.8rem;

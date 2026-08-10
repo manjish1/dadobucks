@@ -12,12 +12,73 @@ const passcodeInput = document.getElementById("passcode-input");
 const passcodeError = document.getElementById("passcode-error");
 const unlockBtn = document.getElementById("unlock-btn");
 const adminBalanceEl = document.getElementById("admin-balance");
+const quickPicksEl = document.getElementById("quick-picks");
 const titleInput = document.getElementById("title-input");
 const amountInput = document.getElementById("amount-input");
 const addBtn = document.getElementById("add-btn");
 const subtractBtn = document.getElementById("subtract-btn");
 const adminError = document.getElementById("admin-error");
 const successBanner = document.getElementById("success-banner");
+
+const QUICK_PICKS = [
+  { label: "Piano dad new song", type: "credit", amount: 20 },
+  { label: "Chores", type: "credit", min: 5, max: 30 },
+  { label: "Laundry", type: "credit", min: 5, max: 30 },
+  { label: "Extra reading 20 mins", type: "credit", amount: 20 },
+  { label: "5 mins screen time", type: "debit", amount: 20 },
+  { label: "1 small candy", type: "debit", amount: 15 },
+  { label: "Baseball fat pack", type: "debit", amount: 200 },
+  { label: "Baseball guaranteed pack", type: "debit", amount: 250 },
+  { label: "Big candy", type: "debit", amount: 60 },
+  { label: "New toy like flip slide", type: "debit", amount: 300 },
+  { label: "10 games of flip slide", type: "debit", amount: 20 }
+];
+
+function quickPickText(pick) {
+  return pick.amount != null ? `${pick.label} (${pick.amount})` : `${pick.label} (${pick.min}-${pick.max})`;
+}
+
+function selectQuickPick(btn) {
+  quickPicksEl.querySelectorAll(".quick-pick-btn").forEach((b) => b.classList.remove("selected"));
+  btn.classList.add("selected");
+}
+
+function applyQuickPick(pick, btn) {
+  selectQuickPick(btn);
+  titleInput.value = pick.label;
+  if (pick.amount != null) {
+    amountInput.value = pick.amount;
+    amountInput.removeAttribute("max");
+    amountInput.placeholder = "e.g. 10";
+  } else {
+    amountInput.value = "";
+    amountInput.min = pick.min;
+    amountInput.max = pick.max;
+    amountInput.placeholder = `${pick.min}-${pick.max}`;
+    amountInput.focus();
+  }
+}
+
+function clearQuickPick(btn) {
+  selectQuickPick(btn);
+  titleInput.value = "";
+  amountInput.value = "";
+  amountInput.min = 1;
+  amountInput.removeAttribute("max");
+  amountInput.placeholder = "e.g. 10";
+  titleInput.focus();
+}
+
+function buildQuickPicks() {
+  quickPicksEl.innerHTML = QUICK_PICKS.map((pick, i) =>
+    `<button type="button" class="quick-pick-btn ${pick.type}" data-index="${i}">${quickPickText(pick)}</button>`
+  ).join("") + `<button type="button" class="quick-pick-btn custom" id="quick-pick-custom">✏️ Custom</button>`;
+
+  quickPicksEl.querySelectorAll(".quick-pick-btn[data-index]").forEach((btn) => {
+    btn.addEventListener("click", () => applyQuickPick(QUICK_PICKS[Number(btn.dataset.index)], btn));
+  });
+  document.getElementById("quick-pick-custom").addEventListener("click", (e) => clearQuickPick(e.target));
+}
 
 const passcodeView = document.getElementById("passcode-view");
 const showChangePasscodeBtn = document.getElementById("show-change-passcode-btn");
@@ -105,6 +166,10 @@ async function submit(type) {
     successBanner.style.display = "block";
     titleInput.value = "";
     amountInput.value = "";
+    amountInput.min = 1;
+    amountInput.removeAttribute("max");
+    amountInput.placeholder = "e.g. 10";
+    quickPicksEl.querySelectorAll(".quick-pick-btn").forEach((b) => b.classList.remove("selected"));
   } catch (err) {
     if (err.message === "INSUFFICIENT_FUNDS") {
       adminError.textContent = "He doesn't have enough Dado Bucks for that subtraction!";
@@ -160,6 +225,7 @@ async function init() {
   }
 
   buildNav("admin");
+  buildQuickPicks();
 
   const name = await Backend.getProfileName(profileId);
   if (!name) {
