@@ -49,6 +49,21 @@
     <div class="success-banner" id="success-banner"></div>
   </div>
 
+  <div id="passcode-view" class="card" style="display:none;">
+    <button class="btn btn-blue" id="show-change-passcode-btn">🔑 Change Passcode</button>
+    <div id="change-passcode-form" style="display:none; margin-top:6px;">
+      <label class="field-label" for="new-passcode-input">New passcode (4-6 digits)</label>
+      <input type="password" id="new-passcode-input" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
+
+      <label class="field-label" for="confirm-passcode-input">Confirm new passcode</label>
+      <input type="password" id="confirm-passcode-input" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
+
+      <div class="error-msg" id="passcode-change-error"></div>
+      <div class="success-banner" id="passcode-change-success"></div>
+      <button class="btn btn-green" id="save-passcode-btn">💾 Save New Passcode</button>
+    </div>
+  </div>
+
   <footer class="foot">Shhh, this page is just for grown-ups! 🤫</footer>
 </div>
 

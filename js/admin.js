@@ -18,6 +18,15 @@ const subtractBtn = document.getElementById("subtract-btn");
 const adminError = document.getElementById("admin-error");
 const successBanner = document.getElementById("success-banner");
 
+const passcodeView = document.getElementById("passcode-view");
+const showChangePasscodeBtn = document.getElementById("show-change-passcode-btn");
+const changePasscodeForm = document.getElementById("change-passcode-form");
+const newPasscodeInput = document.getElementById("new-passcode-input");
+const confirmPasscodeInput = document.getElementById("confirm-passcode-input");
+const passcodeChangeError = document.getElementById("passcode-change-error");
+const passcodeChangeSuccess = document.getElementById("passcode-change-success");
+const savePasscodeBtn = document.getElementById("save-passcode-btn");
+
 function buildNav(active) {
   const tabs = [
     { key: "account", href: `account.html?profile=${encodeURIComponent(profileId)}`, label: "🏠 My Account" },
@@ -34,6 +43,12 @@ function buildNav(active) {
 function lockAdmin() {
   lockView.style.display = "block";
   adminView.style.display = "none";
+  passcodeView.style.display = "none";
+  changePasscodeForm.style.display = "none";
+  newPasscodeInput.value = "";
+  confirmPasscodeInput.value = "";
+  passcodeChangeError.textContent = "";
+  passcodeChangeSuccess.style.display = "none";
   passcodeInput.value = "";
   passcodeError.textContent = "";
 }
@@ -43,6 +58,7 @@ async function unlock() {
   if (ok) {
     lockView.style.display = "none";
     adminView.style.display = "block";
+    passcodeView.style.display = "block";
     passcodeError.textContent = "";
   } else {
     passcodeError.textContent = "Nope, try again!";
@@ -90,6 +106,41 @@ async function submit(type) {
 
 addBtn.addEventListener("click", () => submit("credit"));
 subtractBtn.addEventListener("click", () => submit("debit"));
+
+showChangePasscodeBtn.addEventListener("click", () => {
+  changePasscodeForm.style.display = changePasscodeForm.style.display === "none" ? "block" : "none";
+});
+
+savePasscodeBtn.addEventListener("click", async () => {
+  passcodeChangeError.textContent = "";
+  passcodeChangeSuccess.style.display = "none";
+
+  const newPasscode = newPasscodeInput.value.trim();
+  const confirmPasscode = confirmPasscodeInput.value.trim();
+
+  if (!/^\d{4,6}$/.test(newPasscode)) {
+    passcodeChangeError.textContent = "Passcode must be 4 to 6 digits.";
+    return;
+  }
+  if (newPasscode !== confirmPasscode) {
+    passcodeChangeError.textContent = "Passcodes don't match.";
+    return;
+  }
+
+  savePasscodeBtn.disabled = true;
+  try {
+    await Backend.changePasscode(profileId, newPasscode);
+    passcodeChangeSuccess.textContent = "🔑 Passcode updated!";
+    passcodeChangeSuccess.style.display = "block";
+    newPasscodeInput.value = "";
+    confirmPasscodeInput.value = "";
+  } catch (err) {
+    passcodeChangeError.textContent = "Something went wrong. Please try again.";
+    console.error(err);
+  } finally {
+    savePasscodeBtn.disabled = false;
+  }
+});
 
 async function init() {
   if (!profileId) {

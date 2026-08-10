@@ -124,6 +124,19 @@ const Backend = {
     }
   },
 
+  // profileId, newPasscode -> Promise
+  async changePasscode(profileId, newPasscode) {
+    const passcodeHash = await sha256(newPasscode);
+    if (USE_FIREBASE) {
+      await db.collection("profiles").doc(profileId).set({ passcodeHash }, { merge: true });
+    } else {
+      const data = readLocal();
+      if (!data.profiles[profileId]) throw new Error("PROFILE_NOT_FOUND");
+      data.profiles[profileId].passcodeHash = passcodeHash;
+      writeLocal(data);
+    }
+  },
+
   // callback(balance:number)
   subscribeBalance(profileId, callback) {
     if (USE_FIREBASE) {
