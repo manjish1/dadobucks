@@ -7,6 +7,7 @@ const lockView = document.getElementById("lock-view");
 const lockNameEl = document.getElementById("lock-name");
 const notFoundView = document.getElementById("not-found-view");
 const contentView = document.getElementById("content-view");
+const unlockForm = document.getElementById("unlock-form");
 const passcodeInput = document.getElementById("passcode-input");
 const passcodeError = document.getElementById("passcode-error");
 const unlockBtn = document.getElementById("unlock-btn");
@@ -19,16 +20,6 @@ function buildNav(active) {
     { key: "switch", href: "index.html", label: "👥 Switch Kid" }
   ];
   navTabs.innerHTML = tabs.map((t) => `<a href="${t.href}" class="${t.key === active ? "active" : ""}">${t.label}</a>`).join("");
-}
-
-function getUnlockedSet() {
-  return new Set(JSON.parse(sessionStorage.getItem("dadoUnlockedProfiles") || "[]"));
-}
-
-function markUnlocked(id) {
-  const set = getUnlockedSet();
-  set.add(id);
-  sessionStorage.setItem("dadoUnlockedProfiles", JSON.stringify([...set]));
 }
 
 function showContent() {
@@ -50,19 +41,29 @@ function showContent() {
 }
 
 async function unlock() {
-  const ok = await Backend.verifyPasscode(profileId, passcodeInput.value);
-  if (ok) {
-    markUnlocked(profileId);
-    passcodeError.textContent = "";
-    showContent();
-  } else {
-    passcodeError.textContent = "Nope, try again!";
-    passcodeInput.value = "";
+  passcodeError.textContent = "";
+  unlockBtn.disabled = true;
+  try {
+    const ok = await Backend.verifyPasscode(profileId, passcodeInput.value.trim());
+    if (ok) {
+      markUnlocked(profileId);
+      showContent();
+    } else {
+      passcodeError.textContent = "Nope, try again!";
+      passcodeInput.value = "";
+    }
+  } catch (err) {
+    passcodeError.textContent = "Something went wrong. Please try again.";
+    console.error(err);
+  } finally {
+    unlockBtn.disabled = false;
   }
 }
 
-unlockBtn.addEventListener("click", unlock);
-passcodeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlock(); });
+unlockForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  unlock();
+});
 
 async function init() {
   if (!profileId) {

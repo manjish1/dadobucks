@@ -7,6 +7,7 @@ const lockView = document.getElementById("lock-view");
 const lockNameEl = document.getElementById("lock-name");
 const notFoundView = document.getElementById("not-found-view");
 const adminView = document.getElementById("admin-view");
+const unlockForm = document.getElementById("unlock-form");
 const passcodeInput = document.getElementById("passcode-input");
 const passcodeError = document.getElementById("passcode-error");
 const unlockBtn = document.getElementById("unlock-btn");
@@ -54,20 +55,30 @@ function lockAdmin() {
 }
 
 async function unlock() {
-  const ok = await Backend.verifyPasscode(profileId, passcodeInput.value);
-  if (ok) {
-    lockView.style.display = "none";
-    adminView.style.display = "block";
-    passcodeView.style.display = "block";
-    passcodeError.textContent = "";
-  } else {
-    passcodeError.textContent = "Nope, try again!";
-    passcodeInput.value = "";
+  passcodeError.textContent = "";
+  unlockBtn.disabled = true;
+  try {
+    const ok = await Backend.verifyPasscode(profileId, passcodeInput.value.trim());
+    if (ok) {
+      lockView.style.display = "none";
+      adminView.style.display = "block";
+      passcodeView.style.display = "block";
+    } else {
+      passcodeError.textContent = "Nope, try again!";
+      passcodeInput.value = "";
+    }
+  } catch (err) {
+    passcodeError.textContent = "Something went wrong. Please try again.";
+    console.error(err);
+  } finally {
+    unlockBtn.disabled = false;
   }
 }
 
-unlockBtn.addEventListener("click", unlock);
-passcodeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") unlock(); });
+unlockForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  unlock();
+});
 window.addEventListener("pageshow", (e) => { if (e.persisted) lockAdmin(); });
 
 async function submit(type) {

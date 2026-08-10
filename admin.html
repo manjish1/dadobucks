@@ -19,9 +19,11 @@
   <div id="lock-view" class="card lock-screen" style="display:none;">
     <div class="lock-emoji">🔒</div>
     <h2 style="font-family:'Baloo 2',sans-serif;">Enter <span id="lock-name">Kid</span>'s Passcode</h2>
-    <input type="password" id="passcode-input" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
-    <div class="error-msg" id="passcode-error"></div>
-    <button class="btn btn-blue" id="unlock-btn">Unlock</button>
+    <form id="unlock-form">
+      <input type="password" id="passcode-input" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="off">
+      <div class="error-msg" id="passcode-error"></div>
+      <button type="submit" class="btn btn-blue" id="unlock-btn">Unlock</button>
+    </form>
   </div>
 
   <div id="not-found-view" class="card" style="display:none; text-align:center;">

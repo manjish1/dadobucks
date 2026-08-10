@@ -26,3 +26,25 @@ function renderTxnList(el, txns) {
     </li>
   `).join("");
 }
+
+// sessionStorage can throw (private browsing, some in-app browsers), so
+// treat "remembering you unlocked this profile" as best-effort — never
+// let a storage failure block access after a correct passcode.
+function getUnlockedSet() {
+  try {
+    return new Set(JSON.parse(sessionStorage.getItem("dadoUnlockedProfiles") || "[]"));
+  } catch (err) {
+    console.error(err);
+    return new Set();
+  }
+}
+
+function markUnlocked(id) {
+  try {
+    const set = getUnlockedSet();
+    set.add(id);
+    sessionStorage.setItem("dadoUnlockedProfiles", JSON.stringify([...set]));
+  } catch (err) {
+    console.error(err);
+  }
+}
